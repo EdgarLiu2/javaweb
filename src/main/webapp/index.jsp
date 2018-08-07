@@ -5,9 +5,12 @@
 <h2>Hello World!</h2>
 
 <%
-String jedis_host = System.getProperty("REDIS_URI", "localhost");
-Jedis jedis = new Jedis(jedis_host);
-out.print("Server is running: "+jedis.ping() +" on " + jedis_host + " <br>");
+String jedis_host = System.getProperty("REDIS_HOST", "localhost");
+String jedis_port = System.getProperty("REDIS_PORT", "6379");
+out.print("Redis server: " + jedis_host + ":" + jedis_port + " <br>");
+
+Jedis jedis = new Jedis(jedis_host, Integer.parseInt(jedis_port));
+out.print("Server is running: "+jedis.ping() + " <br>");
 
 String value = jedis.get("hits");
 if (value == null) {

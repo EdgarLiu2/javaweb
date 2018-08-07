@@ -1,9 +1,10 @@
 version: '3'
 services:
   web:
-    image: javaweb-docker:1.0
+    image: javaweb-docker:1.2
     environment:
-      - REDIS_URI=redis-db
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
       - ENV=QA
     ports:
       - 8080:8080
