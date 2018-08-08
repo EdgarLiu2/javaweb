@@ -1,6 +1,7 @@
 
-set ENV=dev
 set ENV=qa
+set ENV=dev
+
 
 docker-compose -p javaweb_%ENV% -f docker-compose.yml -f docker-compose.%ENV%.yml down
 call mvn package
