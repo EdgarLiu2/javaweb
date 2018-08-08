@@ -12,6 +12,9 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<docker.registry>nexus.internal:8081/repository/nexus-Docker-Registry</docker.registry>
 	</properties>
 
 
@@ -31,15 +34,59 @@
 
 
 	<build>
-		<finalName>javaweb</finalName>
+		<finalName>javaweb</finalName>		
+		<plugins>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>					
+						<configuration>
+                            <imageName>${docker.registry}/${project.artifactId}-docker:${project.version}</imageName> 
+							<imageName>${project.artifactId}-docker:${project.version}</imageName>	
+							<imageTags>
+							   <imageTag>${project.version}</imageTag>
+							   <imageTag>latest</imageTag>
+							</imageTags>							
+							<baseImage>tomcat:9</baseImage>
+							<maintainer>maintained by maven</maintainer>
+                            <resources>
+                                <resource>
+                                    <targetPath>/usr/local/tomcat/webapps/javaweb</targetPath>
+                                    <directory>${project.build.directory}/${project.build.finalName}</directory>
+                                </resource>
+                            </resources>                            
+                        </configuration>						
+                    </execution>
+                    <execution>
+                        <id>push-image</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <serverId>nexus</serverId>
+							<registryUrl>http://${docker.registry}</registryUrl>
+                            <imageName>${docker.registry}/${project.artifactId}-docker:${project.version}</imageName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
 	</build>
 	<distributionManagement>
 		<repository>
-			<id>releases</id>
+			<id>nexus</id>
 			<url>http://nexus.internal:8081/repository/maven-releases/</url>
 		</repository>
 		<snapshotRepository>
-			<id>snapshots</id>
+			<id>nexus</id>
 			<url>http://nexus.internal:8081/repository/maven-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>

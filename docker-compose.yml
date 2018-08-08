@@ -17,10 +17,3 @@ services:
     ports:
       - 6379:6379
 
-# set COMPOSE_CONVERT_WINDOWS_PATHS=1
-# set ENV=qa
-# docker-compose -p javaweb_%ENV% -f docker-compose.yml -f docker-compose.%ENV%.yml down
-# docker-compose -p javaweb_%ENV% -f docker-compose.yml -f docker-compose.%ENV%.yml up -d
-# docker container exec -it javaweb%ENV%_web_1 bash
-# docker container exec -it javaweb%ENV%_redis-db_1 bash
-# docker container logs javaweb%ENV%_redis-db_1
