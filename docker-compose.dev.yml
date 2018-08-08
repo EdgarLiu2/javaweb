@@ -1,0 +1,10 @@
+version: '3'
+services:
+  web:
+    environment:
+      - ENV=DEV
+    volumes:
+      - /c/Users/liuedg/Desktop/myWork/workspace/eclipse/javaweb/target/javaweb:/usr/local/tomcat/webapps/ROOT:rw
+  redis-db:
+    environment:
+      - ENV=DEV

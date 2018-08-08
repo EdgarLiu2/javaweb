@@ -1,0 +1,10 @@
+version: '3'
+services:
+  web:
+    environment:
+      - ENV=QA
+  redis-db:
+    environment:
+      - ENV=QA
+    volumes:
+      - /c/Users/liuedg/Desktop/myWork/workspace/Kubernetes/docker-data/redis:/data:rw
