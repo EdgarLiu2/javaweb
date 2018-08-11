@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
   <Appenders>
-    <Console name="Console">
+    <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%c %t] (%F:%L) %-5level %logger{36} - %msg%n"/>
     </Console>
-    <File name="file" fileName="/usr/local/tomcat/logs/javaweb.log" append="false">
+    <File name="file" fileName="${env:APP_LOG_PATH}" append="false">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%c %t] (%F:%L) %-5level %logger{36} - %msg%n"/>
     </File>
   </Appenders>
