@@ -1,0 +1,25 @@
+version: '3'
+services:
+  jenkins:
+    image: jenkins
+    hostname: jenkins
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+    volumes:
+      - /shares/jenkins:/var/jenkins_home
+      - /shares/docker_cert_path:/var/docker_cert_path
+    ports:
+      - 10080:8080
+    links:
+      - registry
+  registry:
+    image: registry:2.6
+    hostname: registry
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+    volumes:
+      - /shares/registry/data:/var/lib/registry
+    ports:
+      - 5000:5000     
