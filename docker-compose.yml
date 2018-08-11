@@ -16,4 +16,30 @@ services:
       - ENV=
     ports:
       - 6379:6379
-
+  cadvisor:
+    image: google/cadvisor
+    ports:
+      - 9080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+  sensu-server:
+    image: hiroakis/docker-sensu-server
+    ports:
+      - 3000:3000
+      - 4567:4567
+      - 5671:5671
+      - 15672:15672
+    volumes:
+      - /shares/sensu/check-docker.json:/etc/sensu/conf.d/check-docker.json
+  sensu-client:
+    image: usman/sensu-client
+    privileged: true
+    depends_on:
+      - sensu-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /shares/sensu/load-docker-metrics.sh:/etc/sensu/plugins/load-docker-metrics.sh
+    
