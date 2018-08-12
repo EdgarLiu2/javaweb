@@ -10,9 +10,10 @@ services:
       - /shares/jenkins:/var/jenkins_home
       - /shares/docker_cert_path:/var/docker_cert_path
     ports:
-      - 10080:8080
+      - 8082:8080
     links:
       - registry
+      - nexus
   registry:
     image: registry:2.6
     hostname: registry
@@ -22,4 +23,14 @@ services:
     volumes:
       - /shares/registry/data:/var/lib/registry
     ports:
-      - 5000:5000     
+      - 5000:5000
+  nexus:
+    image: sonatype/nexus3
+    hostname: nexus
+    domainname: coreit
+    # environment:
+      # - MAX_HEAP=1024m
+    volumes:
+      - /shares/nexus-data:/nexus-data
+    ports:
+      - 8081:8081

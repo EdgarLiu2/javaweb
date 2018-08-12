@@ -32,29 +32,29 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
-  sensu-server:
-    image: hiroakis/docker-sensu-server
-    hostname: sensu-server
-    domainname: internal
-    ports:
-      - 3000:3000
-      - 4567:4567
-      - 5671:5671
-      - 15672:15672
-    volumes:
-      # - /shares/sensu/check-docker.json:/etc/sensu/conf.d/check-docker.json
-      - /shares/sensu:/etc/sensu/conf.d
-  sensu-client:
-    image: usman/sensu-client
-    hostname: sensu-client
-    domainname: internal
-    privileged: true
-    depends_on:
-      - sensu-server
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      # - /shares/sensu/load-docker-metrics.sh:/etc/sensu/plugins/load-docker-metrics.sh
-      - /shares/sensu:/etc/sensu/plugins
-    # SENSU_SERVER_IP RABIT_MQ_USER RABIT_MQ_PASSWORD CLIENT_NAME CLIENT_IP
-    command: sensu-server sensu password sensu-client sensu-client
+  # sensu-server:
+    # image: hiroakis/docker-sensu-server
+    # hostname: sensu-server
+    # domainname: internal
+    # ports:
+      # - 3000:3000
+      # - 4567:4567
+      # - 5671:5671
+      # - 15672:15672
+    # volumes:
+      # # - /shares/sensu/check-docker.json:/etc/sensu/conf.d/check-docker.json
+      # - /shares/sensu:/etc/sensu/conf.d
+  # sensu-client:
+    # image: usman/sensu-client
+    # hostname: sensu-client
+    # domainname: internal
+    # privileged: true
+    # depends_on:
+      # - sensu-server
+    # volumes:
+      # - /var/run/docker.sock:/var/run/docker.sock
+      # # - /shares/sensu/load-docker-metrics.sh:/etc/sensu/plugins/load-docker-metrics.sh
+      # - /shares/sensu:/etc/sensu/plugins
+    # # SENSU_SERVER_IP RABIT_MQ_USER RABIT_MQ_PASSWORD CLIENT_NAME CLIENT_IP
+    # command: sensu-server sensu password sensu-client sensu-client
     
