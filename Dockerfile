@@ -2,6 +2,12 @@ FROM tomcat:9
 
 MAINTAINER Edgar
 
+RUN \
+    apt-get update && \
+#    apt-get install -y build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY target/javaweb.war /usr/local/tomcat/webapps/javaweb.war
 
 
