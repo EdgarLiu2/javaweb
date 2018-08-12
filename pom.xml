@@ -35,12 +35,27 @@
 			<artifactId>log4j-core</artifactId>
 			<version>2.11.1</version>
 		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 
 	<build>
 		<finalName>javaweb</finalName>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
@@ -53,9 +68,7 @@
 							<goal>build</goal>
 						</goals>
 						<configuration>
-							<!--
-							<imageName>${docker.registry}/${project.artifactId}-docker:${project.version}</imageName>
-							-->
+							<!-- <imageName>${docker.registry}/${project.artifactId}-docker:${project.version}</imageName> -->
 							<imageName>${project.artifactId}-docker:${project.version}</imageName>
 							<imageTags>
 								<imageTag>${project.version}</imageTag>
