@@ -4,8 +4,9 @@ REM REM mklink /j D:\workspace\software\eclipse-jee-photon-R-win32-x86_64\jre D:
 set ENV=dev
 set ENV=qa
 
-cd C:\workspace\eclipse\javaweb
-
+REM cd C:\workspace\eclipse\javaweb
+REM cd D:\liuzhao\workspace\projects\javaweb
+REM call ../../setpath.bat
 
 docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml down
 call mvn package
@@ -16,7 +17,7 @@ docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d
 
 REM http://192.168.99.100:8080/javaweb
 REM jenkins:	http://192.168.99.100:8082
-REM nexus:		http://192.168.99.100:8081
+REM nexus:		http://192.168.99.100:8081	http://nexus:8081/
 
 docker container ls
 REM docker container exec -it javaweb%ENV%_web_1 bash
