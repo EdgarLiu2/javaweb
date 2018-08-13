@@ -18,6 +18,7 @@ docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d
 REM http://192.168.99.100:8080/javaweb
 REM jenkins:	http://192.168.99.100:8082
 REM nexus:		http://192.168.99.100:8081	http://nexus:8081/
+REM registry:	http://192.168.99.100:5000/v2/javaweb-docker/tags/list
 
 docker container ls
 REM docker container exec -it javaweb%ENV%_web_1 bash
