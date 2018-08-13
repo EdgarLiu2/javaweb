@@ -7,8 +7,8 @@ services:
     environment:
       - ENV=COREIT
     volumes:
-      - /shares/jenkins:/var/jenkins_home
-      - /shares/docker_cert_path:/var/docker_cert_path
+      - /shares/jenkins/jenkins_home:/var/jenkins_home
+      - /shares/jenkins/docker_cert_path:/var/docker_cert_path
     ports:
       - 8082:8080
     links:
@@ -35,3 +35,38 @@ services:
     ports:
       - 8081:8081
       - 8083:8083
+  # elk-logstash:
+    # image: logstash
+    # hostname: elk-logstash
+    # domainname: coreit
+    # environment:
+      # - ENV=COREIT
+    # volumes:
+      # - /shares/logstash/logstash.conf:/etc/logstash.conf
+    # ports:
+      # - 4560:4560
+    # links:
+      # - elk-elasticsearch
+    # command: -f /etc/logstash.conf
+  # elk-elasticsearch:
+    # image: elasticsearch
+    # hostname: elk-elasticsearch
+    # domainname: coreit
+    # environment:
+      # - ENV=COREIT
+    # volumes:
+      # - /shares/elasticsearch/data:/usr/share/elasticsearch/data
+    # ports:
+      # - 9200:9200
+  # elk-kibana:
+    # image: kibana
+    # hostname: elk-kibana
+    # domainname: coreit
+    # environment:
+      # - ENV=COREIT
+      # - ELASTICSEARCH_URL=http://elk-elasticsearch:9200
+    # volumes:
+    # ports:
+      # - 5601:5601
+    # links:
+      # - elk-elasticsearch
