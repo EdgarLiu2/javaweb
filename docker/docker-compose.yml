@@ -1,7 +1,7 @@
 version: '3'
 services:
   web:
-    image: javaweb-docker:1.3
+    image: javaweb-docker:1.5
     hostname: web
     domainname: internal
     environment:
