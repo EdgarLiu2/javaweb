@@ -13,6 +13,7 @@ services:
       - 8080:8080
     depends_on:
       - redis-db
+    restart: always
   redis-db:
     image: redis
     hostname: redis-db
@@ -21,6 +22,7 @@ services:
       - ENV=
     ports:
       - 6379:6379
+    restart: always
   cadvisor:
     image: google/cadvisor
     hostname: cadvisor
@@ -32,6 +34,7 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+    restart: always
   # sensu-server:
     # image: hiroakis/docker-sensu-server
     # hostname: sensu-server

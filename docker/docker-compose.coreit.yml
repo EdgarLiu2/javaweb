@@ -14,6 +14,7 @@ services:
     links:
       - registry
       - nexus
+    restart: always
   registry:
     image: registry:2.6
     hostname: registry
@@ -24,6 +25,7 @@ services:
       - /shares/registry/data:/var/lib/registry
     ports:
       - 5000:5000
+    restart: always
   nexus:
     image: sonatype/nexus3
     hostname: nexus
@@ -35,6 +37,7 @@ services:
     ports:
       - 8081:8081
       - 8083:8083
+    restart: always
   # elk-logstash:
     # image: logstash
     # hostname: elk-logstash

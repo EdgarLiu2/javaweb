@@ -87,7 +87,7 @@
 							<goal>build</goal>
 						</goals>
 						<configuration>
-							<imageName>${project.artifactId}-docker:${project.version}</imageName> 
+							<imageName>${project.artifactId}-docker</imageName> 
 							<imageTags>
 								<imageTag>${project.version}</imageTag>
 								<imageTag>latest</imageTag>
@@ -98,6 +98,11 @@
 								<resource>
 									<targetPath>/usr/local/tomcat/webapps/javaweb</targetPath>
 									<directory>${project.build.directory}/${project.build.finalName}</directory>
+									<!--
+									<targetPath>/usr/local/tomcat/webapps</targetPath>
+									<directory>${project.build.directory}</directory>
+									<include>${project.build.finalName}.jar</include>
+									-->
 								</resource>
 							</resources>
 						</configuration>
