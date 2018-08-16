@@ -7,7 +7,7 @@ services:
     environment:
       - REDIS_HOST=redis-db
       - REDIS_PORT=6379
-      - APP_LOG_PATH=/usr/local/tomcat/logs/javaweb.log
+      - APP_LOG_PATH=/usr/local/tomcat/logs
       - ENV=
     ports:
       - 8080:8080
