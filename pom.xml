@@ -7,18 +7,18 @@
 	<groupId>test</groupId>
 	<artifactId>javaweb</artifactId>
 	<packaging>war</packaging>
-	<version>1.5</version>
+	<version>1.6</version>
 	<name>javaweb Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<nexus.url>http://nexus:8081</nexus.url>
-		<nexus.maven_repo>${nexus.url}/repository/maven-releases/</nexus.maven_repo>
-		<nexus.docker_registry>nexus:8083</nexus.docker_registry>
-		<!-- <docker.registry>${nexus.docker_registry}</docker.registry>  -->
-		<docker.registry>localhost:5000</docker.registry>
+		<docker_host>192.168.99.100</docker_host>
+		<nexus.maven_repo>http://${docker_host}:8081/repository/maven-releases/</nexus.maven_repo>
+		<nexus.docker_registry>${docker_host}:8083</nexus.docker_registry>
+		<docker.registry>${nexus.docker_registry}</docker.registry>
+		<!-- <docker.registry>localhost:5000</docker.registry> -->
 	</properties>
 
 
