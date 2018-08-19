@@ -13,17 +13,27 @@ call mvn package
 docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml up -d
 
 docker-compose -p coreit -f docker\docker-compose.coreit.yml down
-docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d
+docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d --remove-orphans
 
 REM http://192.168.99.100:8080/javaweb
 REM jenkins:	http://192.168.99.100:8082
 REM nexus:		http://192.168.99.100:8081	http://nexus:8081/
 REM registry:	http://192.168.99.100:5000/v2/javaweb-docker/tags/list
+REM kibana:		http://192.168.99.100:5601
+REM elasticsearch:	http://192.168.99.100:9200/_cat/health
 
 docker container ls
 REM docker container exec -it javaweb%ENV%_web_1 bash
 REM docker container exec -it javaweb%ENV%_redis-db_1 bash
 REM docker container exec -it coreit_jenkins_1 bash
+REM docker container exec -it elk-elasticsearch-2 bash
+REM docker container exec -it elk-kibana-1 bash
+
 REM docker container logs javaweb%ENV%_redis-db_1
 REM docker container logs coreit_nexus_1
+REM docker container logs elk-elasticsearch-1
+REM docker container logs elk-elasticsearch-2
+REM docker container logs -f elk-kibana-1
+REM docker container logs -f elk-logstash-1
+
 REM docker image rm -f $(docker image ls -q)
