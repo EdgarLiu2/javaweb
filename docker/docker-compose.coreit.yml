@@ -14,7 +14,7 @@ services:
     links:
       # - registry
       - nexus
-    restart: always
+    restart: unless-stopped
   # registry:
     # image: registry:2.6
     # hostname: registry
@@ -25,7 +25,7 @@ services:
       # - /shares/registry/data:/var/lib/registry
     # ports:
       # - 5000:5000
-    # restart: always
+    # restart: unless-stopped
   nexus:
     image: sonatype/nexus3
     hostname: nexus
@@ -37,7 +37,7 @@ services:
     ports:
       - 8081:8081
       - 8083:8083
-    restart: always
+    restart: unless-stopped
 
 
 
@@ -47,7 +47,6 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.3.2
     hostname: elk-elasticsearch-1
     domainname: coreit
-    container_name: elk-elasticsearch-1
     environment:
       - ENV=COREIT
       - cluster.name=docker-cluster
@@ -67,7 +66,6 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.3.2
     hostname: elk-elasticsearch-2
     domainname: coreit
-    container_name: elk-elasticsearch-2
     environment:
       - ENV=COREIT
       - cluster.name=docker-cluster
@@ -89,7 +87,6 @@ services:
     image: docker.elastic.co/kibana/kibana:6.3.2
     hostname: elk-kibana-1
     domainname: coreit
-    container_name: elk-kibana-1
     environment:
       - ENV=COREIT
       - server.host="0.0.0.0"
@@ -104,7 +101,6 @@ services:
     # image: docker.elastic.co/kibana/kibana:6.3.2
     # hostname: elk-kibana-2
     # domainname: coreit
-    # container_name: elk-kibana-2
     # environment:
       # - ENV=COREIT
       # - server.host="0.0.0.0"
@@ -119,15 +115,23 @@ services:
     image: docker.elastic.co/logstash/logstash:6.3.2
     hostname: elk-logstash-1
     domainname: coreit
-    container_name: elk-logstash-1
     environment:
       - ENV=COREIT
       - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-1:9200
       - config.reload.automatic=true
     volumes:
       - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
-      - /shares/elk/logstash/data1:/usr/share/logstash/data
+      # - /shares/elk/logstash/node1:/usr/share/logstash/data
     depends_on:
       - elk-elasticsearch-1
       - elk-elasticsearch-2
-
+  elk-filebeat-1:
+    image: docker.elastic.co/beats/filebeat:6.3.2
+    hostname: elk-filebeat-1
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+    volumes:
+      - /shares/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    depends_on:
+      - elk-logstash-1

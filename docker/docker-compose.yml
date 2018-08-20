@@ -7,22 +7,24 @@ services:
     environment:
       - REDIS_HOST=redis-db
       - REDIS_PORT=6379
-      - APP_LOG_PATH=/usr/local/tomcat/logs
+      - APP_LOG_PATH=/data
       - ENV=
     ports:
       - 8080:8080
+    volumes:
+      - /shares/tomcat/logs:/data
     depends_on:
       - redis-db
-    restart: always
+    restart: unless-stopped
   redis-db:
-    image: redis
+    image: redis:4.0.11
     hostname: redis-db
     domainname: internal
     environment:
       - ENV=
     ports:
       - 6379:6379
-    restart: always
+    restart: unless-stopped
   cadvisor:
     image: google/cadvisor
     hostname: cadvisor
@@ -34,7 +36,7 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
-    restart: always
+    restart: unless-stopped
   # sensu-server:
     # image: hiroakis/docker-sensu-server
     # hostname: sensu-server

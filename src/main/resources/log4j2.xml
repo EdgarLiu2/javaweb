@@ -3,13 +3,15 @@
 <Configuration>
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger{36} - %msg%n"/>
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{36}] - %msg%n"/>
     </Console>
+    <!-- 
     <File name="Current" fileName="${env:APP_LOG_PATH}/javaweb_current.log" append="false">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger{36} - %msg%n"/>
     </File>
-	<RollingFile name="Rolling" fileName="${env:APP_LOG_PATH}/javaweb.log" filePattern="${env:APP_LOG_PATH}/javaweb.log.%d{yyyy-MM-dd}">
-		<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger{36} - %msg%n"/>
+     -->
+	<RollingFile name="Rolling" fileName="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log" filePattern="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log.%d{yyyy-MM-dd}">
+		<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{36}] - %msg%n"/>
 		<Policies>
 			<!-- 1 day, smallest interval of the date lookup -->
 			<TimeBasedTriggeringPolicy interval="1" />
@@ -19,7 +21,7 @@
   <Loggers>
     <Root level="INFO">
       <AppenderRef ref="Console" />
-      <AppenderRef ref="Current" />
+      <!-- <AppenderRef ref="Current" /> -->
 	  <AppenderRef ref="Rolling" />
     </Root>
   </Loggers>
