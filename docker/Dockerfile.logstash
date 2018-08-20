@@ -1,0 +1,9 @@
+FROM docker.elastic.co/logstash/logstash:6.3.2
+
+MAINTAINER Edgar
+
+# RUN apt-get update && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+RUN /opt/logstash/bin/logstash-plugin install logstash-filter-translate
+RUN /opt/logstash/bin/logstash-plugin install logstash-input-beats
+
+# docker image build -f Dockerfile.logstash -t logstash-beats:6.3.2 .

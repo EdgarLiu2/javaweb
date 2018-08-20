@@ -28,6 +28,7 @@ REM docker container exec -it javaweb%ENV%_redis-db_1 bash
 REM docker container exec -it coreit_jenkins_1 bash
 REM docker container exec -it elk-elasticsearch-2 bash
 REM docker container exec -it elk-kibana-1 bash
+REM docker container exec -it elk-logstash-1 bash
 
 REM docker container logs javaweb%ENV%_redis-db_1
 REM docker container logs coreit_nexus_1

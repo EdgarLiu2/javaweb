@@ -122,8 +122,12 @@ services:
     container_name: elk-logstash-1
     environment:
       - ENV=COREIT
+      - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-1:9200
+      - config.reload.automatic=true
     volumes:
       - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
+      - /shares/elk/logstash/data1:/usr/share/logstash/data
     depends_on:
       - elk-elasticsearch-1
       - elk-elasticsearch-2
+
