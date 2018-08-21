@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
   tomcat-1:
     environment:
-      - ENV=QA
+      - ENV=QA1
   tomcat-2:
     image: javaweb-docker:1.6
     hostname: tomcat-2
@@ -27,7 +27,7 @@ services:
       - REDIS_HOST=redis-db
       - REDIS_PORT=6379
       - APP_LOG_PATH=/data
-      - ENV=QA
+      - ENV=QA2
     ports:
       - 8090:8080
     volumes:

@@ -2,13 +2,31 @@
 <%@ page import="org.apache.logging.log4j.Logger" %>
 <%@ page import="org.apache.logging.log4j.LogManager" %>
 
+<%!
+
+public static String getIpAddr(HttpServletRequest request) {
+	String ip = request.getHeader("x-forwarded-for");
+	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		ip = request.getHeader("Proxy-Client-IP");
+	}
+	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		ip = request.getHeader("WL-Proxy-Client-IP");
+	}
+	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+		ip = request.getRemoteAddr();
+	}
+	return ip;
+}
+
+%>
+
 <html>
 <body>
 <h2>Hello World! - <%= System.getenv("ENV") %> </h2>
 
 <%
 
-String ip = request.getRemoteAddr();
+String ip = getIpAddr(request);
 String actor = (String)request.getParameter("actor");
 if (actor ==null) {
 	actor ="anonymous";

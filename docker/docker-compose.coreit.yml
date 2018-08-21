@@ -62,27 +62,27 @@ services:
       #- /shares/elk/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - 9200:9200
-  elk-elasticsearch-2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.3.2
-    hostname: elk-elasticsearch-2
-    domainname: coreit
-    environment:
-      - ENV=COREIT
-      - cluster.name=elk-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "discovery.zen.ping.unicast.hosts=elk-elasticsearch-1,elk-elasticsearch-2"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - /shares/elk/elasticsearch/node2:/usr/share/elasticsearch/data
+  # elk-elasticsearch-2:
+    # image: docker.elastic.co/elasticsearch/elasticsearch:6.3.2
+    # hostname: elk-elasticsearch-2
+    # domainname: coreit
+    # environment:
+      # - ENV=COREIT
+      # - cluster.name=elk-cluster
+      # - bootstrap.memory_lock=true
+      # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # - "discovery.zen.ping.unicast.hosts=elk-elasticsearch-1,elk-elasticsearch-2"
+    # ulimits:
+      # memlock:
+        # soft: -1
+        # hard: -1
+    # volumes:
+      # - /shares/elk/elasticsearch/node2:/usr/share/elasticsearch/data
     # ports:
-      # - 9200:9200
-    links:
-      - elk-elasticsearch-1
-      #- elk-elasticsearch-2
+      # - 9201:9200
+    # links:
+      # - elk-elasticsearch-1
+      # #- elk-elasticsearch-2
   elk-kibana-1:
     image: docker.elastic.co/kibana/kibana:6.3.2
     hostname: elk-kibana-1
@@ -97,18 +97,18 @@ services:
       - 5601:5601
     depends_on:
       - elk-elasticsearch-1
-  elk-kibana-2:
-    image: docker.elastic.co/kibana/kibana:6.3.2
-    hostname: elk-kibana-2
-    domainname: coreit
-    environment:
-      - ENV=COREIT
-      - server.host="0.0.0.0"
-      - ELASTICSEARCH_URL="http://elk-elasticsearch-2:9200"
-    ports:
-      - 5602:5601
-    depends_on:
-      - elk-elasticsearch-2
+  # elk-kibana-2:
+    # image: docker.elastic.co/kibana/kibana:6.3.2
+    # hostname: elk-kibana-2
+    # domainname: coreit
+    # environment:
+      # - ENV=COREIT
+      # - server.host="0.0.0.0"
+      # - ELASTICSEARCH_URL="http://elk-elasticsearch-2:9200"
+    # ports:
+      # - 5602:5601
+    # depends_on:
+      # - elk-elasticsearch-2
   elk-logstash-1:
     image: docker.elastic.co/logstash/logstash:6.3.2
     hostname: elk-logstash-1
@@ -121,20 +121,20 @@ services:
       - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
     depends_on:
       - elk-elasticsearch-1
-      - elk-elasticsearch-2
-  elk-logstash-2:
-    image: docker.elastic.co/logstash/logstash:6.3.2
-    hostname: elk-logstash-2
-    domainname: coreit
-    environment:
-      - ENV=COREIT
-      - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-2:9200
-      - config.reload.automatic=true
-    volumes:
-      - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
-    depends_on:
-      - elk-elasticsearch-1
-      - elk-elasticsearch-2
+      # - elk-elasticsearch-2
+  # elk-logstash-2:
+    # image: docker.elastic.co/logstash/logstash:6.3.2
+    # hostname: elk-logstash-2
+    # domainname: coreit
+    # environment:
+      # - ENV=COREIT
+      # - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-2:9200
+      # - config.reload.automatic=true
+    # volumes:
+      # - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
+    # depends_on:
+      # - elk-elasticsearch-1
+      # - elk-elasticsearch-2
   elk-filebeat-1:
     image: docker.elastic.co/beats/filebeat:6.3.2
     hostname: elk-filebeat-1
@@ -147,5 +147,5 @@ services:
       - /shares/nginx/logs:/data/nginx-logs
     depends_on:
       - elk-logstash-1
-      - elk-logstash-2
+      # - elk-logstash-2
     command: -strict.perms=false

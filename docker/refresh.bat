@@ -1,21 +1,42 @@
+echo off
 REM mklink /j D:\Documents\liuzhao\workspace\appdata\shares\javaweb D:\Documents\liuzhao\workspace\projects\javaweb
 REM mklink /j D:\workspace\software\eclipse-jee-photon-R-win32-x86_64\jre D:\workspace\software\jdk1.8.0_181_x64\jre
-
-set ENV=dev
-set ENV=qa
 
 REM cd C:\workspace\eclipse\javaweb
 REM cd D:\liuzhao\workspace\projects\javaweb
 REM call ../../setpath.bat
 
+SET SHARE=D:\liuzhao\workspace\appdata\shares
+mkdir %SHARE%\nginx\logs
+mkdir %SHARE%\ssl
+mkdir %SHARE%\tomcat\logs
+mkdir %SHARE%\redis
+mkdir %SHARE%\jenkins\jenkins_home
+mkdir %SHARE%\jenkins\docker_cert_path
+mkdir %SHARE%\registry\data
+mkdir %SHARE%\nexus-data
+mkdir %SHARE%\elk\elasticsearch\node1
+mkdir %SHARE%\elk\elasticsearch\node2
+mkdir %SHARE%\elk\logstash\pipeline
+mkdir %SHARE%\elk\filebeat
+
+copy /y docker\config\nginx.conf %SHARE%\nginx
+copy /y docker\config\javaweb.pipeline.conf  %SHARE%\elk\logstash\pipeline
+copy /y docker\config\javaweb.filebeat.yml %SHARE%\elk\filebeat
+
+
+set ENV=dev
+set ENV=qa
+
+
 docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml down
 call mvn package
 docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml up -d
-docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml restart nginx
+REM docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml restart nginx
 
 
-docker-compose -p coreit -f docker\docker-compose.coreit.yml down
-docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d --remove-orphans
+REM docker-compose -p coreit -f docker\docker-compose.coreit.yml down
+REM docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d --remove-orphans
 
 REM http://192.168.99.100:8080/javaweb
 REM jenkins:	http://192.168.99.100:8082
