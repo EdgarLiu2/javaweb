@@ -10,7 +10,7 @@
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger{36} - %msg%n"/>
     </File>
      -->
-	<RollingFile name="Rolling" fileName="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log" filePattern="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log.%d{yyyy-MM-dd}">
+	<RollingFile name="Rolling" fileName="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log" filePattern="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log.%d{yyyy-MM-dd}" append="true">
 		<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{36}] - %msg%n"/>
 		<Policies>
 			<!-- 1 day, smallest interval of the date lookup -->

@@ -11,6 +11,8 @@ REM call ../../setpath.bat
 docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml down
 call mvn package
 docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml up -d
+docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml restart nginx
+
 
 docker-compose -p coreit -f docker\docker-compose.coreit.yml down
 docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d --remove-orphans
@@ -23,7 +25,7 @@ REM kibana:		http://192.168.99.100:5601
 REM elasticsearch:	http://192.168.99.100:9200/_cat/health
 
 docker container ls
-REM docker container exec -it javaweb%ENV%_web_1 bash
+REM docker container exec -it javaweb%ENV%_tomcat-1_1 bash
 REM docker container exec -it javaweb%ENV%_redis-db_1 bash
 REM docker container exec -it coreit_jenkins_1 bash
 REM docker container exec -it elk-elasticsearch-2 bash
@@ -31,10 +33,12 @@ REM docker container exec -it elk-kibana-1 bash
 REM docker container exec -it elk-logstash-1 bash
 
 REM docker container logs javaweb%ENV%_redis-db_1
+REM docker container logs javaweb%ENV%_nginx_1
 REM docker container logs coreit_nexus_1
-REM docker container logs elk-elasticsearch-1
-REM docker container logs elk-elasticsearch-2
-REM docker container logs -f elk-kibana-1
-REM docker container logs -f elk-logstash-1
+REM docker container logs coreit_elk-elasticsearch-1_1
+REM docker container logs coreit_elk-elasticsearch-2_1
+REM docker container logs coreit_elk-kibana-1_1
+REM docker container logs -f coreit_elk-logstash-1_1
+REM docker container logs coreit_elk-filebeat-1_1
 
 REM docker image rm -f $(docker image ls -q)

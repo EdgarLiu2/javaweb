@@ -1,8 +1,40 @@
 version: '3'
 services:
-  web:
+  nginx:
+    image: nginx
+    hostname: nginx-1
+    domainname: internal
     environment:
       - ENV=QA
+    ports:
+      - 80:80
+    volumes:
+      - /shares/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /shares/ssl:/etc/nginx/certs:ro
+      - /shares/nginx/logs:/var/log/nginx
+    depends_on:
+      - tomcat-1
+      - tomcat-2
+    restart: unless-stopped
+  tomcat-1:
+    environment:
+      - ENV=QA
+  tomcat-2:
+    image: javaweb-docker:1.6
+    hostname: tomcat-2
+    domainname: internal
+    environment:
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
+      - APP_LOG_PATH=/data
+      - ENV=QA
+    ports:
+      - 8090:8080
+    volumes:
+      - /shares/tomcat/logs:/data
+    depends_on:
+      - redis-db
+    restart: unless-stopped
   redis-db:
     environment:
       - ENV=QA

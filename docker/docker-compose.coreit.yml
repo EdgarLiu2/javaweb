@@ -49,7 +49,7 @@ services:
     domainname: coreit
     environment:
       - ENV=COREIT
-      - cluster.name=docker-cluster
+      - cluster.name=elk-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "discovery.zen.ping.unicast.hosts=elk-elasticsearch-1,elk-elasticsearch-2"
@@ -68,7 +68,7 @@ services:
     domainname: coreit
     environment:
       - ENV=COREIT
-      - cluster.name=docker-cluster
+      - cluster.name=elk-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "discovery.zen.ping.unicast.hosts=elk-elasticsearch-1,elk-elasticsearch-2"
@@ -97,20 +97,18 @@ services:
       - 5601:5601
     depends_on:
       - elk-elasticsearch-1
-  # elk-kibana-2:
-    # image: docker.elastic.co/kibana/kibana:6.3.2
-    # hostname: elk-kibana-2
-    # domainname: coreit
-    # environment:
-      # - ENV=COREIT
-      # - server.host="0.0.0.0"
-      # - ELASTICSEARCH_URL="http://elk-elasticsearch-2:9200"
-    # # volumes:
-      # # - /shares/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-    # ports:
-      # - 5601:5601
-    # depends_on:
-      # - elk-elasticsearch-2
+  elk-kibana-2:
+    image: docker.elastic.co/kibana/kibana:6.3.2
+    hostname: elk-kibana-2
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+      - server.host="0.0.0.0"
+      - ELASTICSEARCH_URL="http://elk-elasticsearch-2:9200"
+    ports:
+      - 5602:5601
+    depends_on:
+      - elk-elasticsearch-2
   elk-logstash-1:
     image: docker.elastic.co/logstash/logstash:6.3.2
     hostname: elk-logstash-1
@@ -121,7 +119,19 @@ services:
       - config.reload.automatic=true
     volumes:
       - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
-      # - /shares/elk/logstash/node1:/usr/share/logstash/data
+    depends_on:
+      - elk-elasticsearch-1
+      - elk-elasticsearch-2
+  elk-logstash-2:
+    image: docker.elastic.co/logstash/logstash:6.3.2
+    hostname: elk-logstash-2
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+      - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-2:9200
+      - config.reload.automatic=true
+    volumes:
+      - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
     depends_on:
       - elk-elasticsearch-1
       - elk-elasticsearch-2
@@ -132,6 +142,10 @@ services:
     environment:
       - ENV=COREIT
     volumes:
-      - /shares/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /shares/elk/filebeat/javaweb.filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /shares/tomcat/logs:/data/tomcat-logs
+      - /shares/nginx/logs:/data/nginx-logs
     depends_on:
       - elk-logstash-1
+      - elk-logstash-2
+    command: -strict.perms=false

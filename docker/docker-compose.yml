@@ -1,8 +1,8 @@
 version: '3'
 services:
-  web:
+  tomcat-1:
     image: javaweb-docker:1.6
-    hostname: web
+    hostname: tomcat-1
     domainname: internal
     environment:
       - REDIS_HOST=redis-db
