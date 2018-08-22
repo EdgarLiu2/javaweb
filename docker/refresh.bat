@@ -7,6 +7,8 @@ REM cd D:\liuzhao\workspace\projects\javaweb
 REM call ../../setpath.bat
 
 SET SHARE=D:\liuzhao\workspace\appdata\shares
+SET SHARE=C:\workspace\shares
+
 mkdir %SHARE%\nginx\logs
 mkdir %SHARE%\ssl
 mkdir %SHARE%\tomcat\logs
@@ -35,8 +37,9 @@ docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-co
 REM docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml restart nginx
 
 
-REM docker-compose -p coreit -f docker\docker-compose.coreit.yml down
-REM docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d --remove-orphans
+docker-compose -p coreit -f docker\docker-compose.coreit.yml down
+docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d --remove-orphans
+REM docker-compose -p coreit -f docker\docker-compose.coreit.yml restart elk-filebeat-1
 
 REM http://192.168.99.100:8080/javaweb
 REM jenkins:	http://192.168.99.100:8082

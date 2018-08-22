@@ -10,18 +10,20 @@ filebeat.inputs:
   fields_under_root: true
   fields:
     log_type: tomcat
- 
+
+
 - type: log
   enabled: true
   paths:
-    - /data/nginx-logs/access*
+    - /data/nginx-logs/*.log
   fields_under_root: true
   fields:
     log_type: nginx
-	
+
 #----------------------------- Logstash output --------------------------------
 output.logstash:
   # The Logstash hosts
-  hosts: ["elk-logstash-1:5044", "elk-logstash-2:5044"]
+  # hosts: ["elk-logstash-1:5044", "elk-logstash-2:5044"]
+  hosts: ["elk-logstash-1:5044"]
   loadbalance: true
 
