@@ -6,6 +6,7 @@ REM cd C:\workspace\eclipse\javaweb
 REM cd D:\liuzhao\workspace\projects\javaweb
 REM call ../../setpath.bat
 
+set ELASTIC_VERSION=6.3.2
 SET SHARE=D:\liuzhao\workspace\appdata\shares
 SET SHARE=C:\workspace\shares
 
@@ -55,6 +56,7 @@ REM docker container exec -it coreit_jenkins_1 bash
 REM docker container exec -it elk-elasticsearch-2 bash
 REM docker container exec -it elk-kibana-1 bash
 REM docker container exec -it elk-logstash-1 bash
+REM docker container exec -it coreit_elk-filebeat-1_1 bash
 
 REM docker container logs javaweb%ENV%_redis-db_1
 REM docker container logs javaweb%ENV%_nginx_1
