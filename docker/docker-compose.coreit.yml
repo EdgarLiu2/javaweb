@@ -201,9 +201,51 @@ services:
       # - elk-logstash-2
     networks:
       - 'elk-stack'
-    command: -strict.perms=false -e
+    command: --strict.perms=false -e
     healthcheck:
       test: filebeat test config -strict.perms=false
+      interval: 30s
+      timeout: 15s
+      retries: 5
+  elk-filebeat-2:
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
+    hostname: elk-filebeat-2
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+    volumes:
+      - /var/log:/mnt/log:ro
+      - /shares/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    depends_on:
+      - elk-elasticsearch-1
+      - elk-kibana-1
+    networks:
+      - 'elk-stack'
+    command: --strict.perms=false -e
+    healthcheck:
+      test: filebeat test config -strict.perms=false
+      interval: 30s
+      timeout: 15s
+      retries: 5
+  elk-metricbeat-1:
+    image: docker.elastic.co/beats/metricbeat:${ELASTIC_VERSION}
+    hostname: elk-metricbeat-1
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+    volumes:
+      - /proc:/hostfs/proc:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /:/hostfs:ro
+      - /shares/elk/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+    depends_on:
+      - elk-elasticsearch-1
+      - elk-kibana-1
+    networks:
+      - 'elk-stack'
+    command: --strict.perms=false -e
+    healthcheck:
+      test: metricbeat test config -strict.perms=false
       interval: 30s
       timeout: 15s
       retries: 5
