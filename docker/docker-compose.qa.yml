@@ -1,7 +1,7 @@
 version: '3'
 services:
   nginx:
-    image: nginx
+    image: nginx:1.15.3
     hostname: nginx-1
     domainname: internal
     environment:
@@ -20,7 +20,7 @@ services:
     environment:
       - ENV=QA1
   tomcat-2:
-    image: javaweb-docker:1.6
+    image: javaweb-docker:${APP_VERSION}
     hostname: tomcat-2
     domainname: internal
     environment:

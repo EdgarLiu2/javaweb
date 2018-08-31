@@ -6,14 +6,15 @@ processors:
   - add_cloud_metadata:
 
 output.elasticsearch:
-  hosts: ['elk-elasticsearch-1:9200']
+  hosts: [ 'elk-elasticsearch-1:9200' ]
+  # hosts: [ 'elk-elasticsearch-1:9200', 'elk-elasticsearch-2:9200' ]
   protocol: "http"
   # username: elastic
   # password: "${ELASTIC_PASSWORD}"
   # ssl.certificate_authorities: ["/usr/share/metricbeat/certs/ca/ca.crt"]
 
 setup.kibana:
-  host: "http://elk-kibana-1:5601"
+  host: 'http://elk-kibana-1:5601'
   protocol: "http"
   # username: elastic
   # password: "${ELASTIC_PASSWORD}"

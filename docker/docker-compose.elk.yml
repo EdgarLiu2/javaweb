@@ -1,0 +1,209 @@
+version: '3'
+services:
+  elk-elasticsearch-1:
+    # grep vm.max_map_count /etc/sysctl.conf
+    # sudo sysctl -w vm.max_map_count=262144
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    hostname: elk-elasticsearch-1
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+      - cluster.name=elk-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elk-elasticsearch-1,elk-elasticsearch-2"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /shares/elk/elasticsearch/node1:/usr/share/elasticsearch/data
+      #- /shares/elk/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9200:9200
+    networks:
+      - 'elk-stack'
+    healthcheck:
+      test: curl -s http://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  elk-elasticsearch-2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    hostname: elk-elasticsearch-2
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+      - cluster.name=elk-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elk-elasticsearch-1,elk-elasticsearch-2"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /shares/elk/elasticsearch/node2:/usr/share/elasticsearch/data
+    ports:
+      - 9201:9200
+    networks:
+      - 'elk-stack'
+    links:
+      - elk-elasticsearch-1
+    healthcheck:
+      test: curl -s http://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  elk-kibana-1:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
+    hostname: elk-kibana-1
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+      - server.host="0.0.0.0"
+      - ELASTICSEARCH_URL="http://elk-elasticsearch-1:9200"
+    # volumes:
+      # - /shares/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    networks:
+      - 'elk-stack'
+    depends_on:
+      - elk-elasticsearch-1
+    healthcheck:
+      test: curl -s http://localhost:5601 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  elk-kibana-2:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
+    hostname: elk-kibana-2
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+      - server.host="0.0.0.0"
+      - ELASTICSEARCH_URL="http://elk-elasticsearch-2:9200"
+    ports:
+      - 5602:5601
+    networks:
+      - 'elk-stack'
+    depends_on:
+      - elk-elasticsearch-2
+    healthcheck:
+      test: curl -s http://localhost:5601 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  elk-logstash-1:
+    image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
+    hostname: elk-logstash-1
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+      - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-1:9200
+      - config.reload.automatic=true
+    volumes:
+      - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elk-elasticsearch-1
+      - elk-elasticsearch-2
+    networks:
+      - 'elk-stack'
+    healthcheck:
+      test: bin/logstash -t
+      interval: 60s
+      timeout: 50s
+      retries: 5
+  elk-logstash-2:
+    image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
+    hostname: elk-logstash-2
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+      - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-2:9200
+      - config.reload.automatic=true
+    volumes:
+      - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elk-elasticsearch-1
+      - elk-elasticsearch-2
+    networks:
+      - 'elk-stack'
+    healthcheck:
+      test: bin/logstash -t
+      interval: 60s
+      timeout: 50s
+      retries: 5
+  elk-filebeat-1:
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
+    hostname: elk-filebeat-1
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+    volumes:
+      - /shares/elk/filebeat/javaweb.filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /shares/tomcat/logs:/data/tomcat-logs
+      - /shares/nginx/logs:/data/nginx-logs
+    depends_on:
+      - elk-logstash-1
+      - elk-logstash-2
+    networks:
+      - 'elk-stack'
+    command: --strict.perms=false -e
+    healthcheck:
+      test: filebeat test config -strict.perms=false
+      interval: 30s
+      timeout: 15s
+      retries: 5
+  elk-filebeat-2:
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
+    hostname: elk-filebeat-2
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+    volumes:
+      - /var/log:/mnt/log:ro
+      - /shares/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    depends_on:
+      - elk-elasticsearch-1
+      - elk-kibana-1
+      - elk-elasticsearch-2
+      - elk-kibana-2
+    networks:
+      - 'elk-stack'
+    command: --strict.perms=false -e
+    healthcheck:
+      test: filebeat test config -strict.perms=false
+      interval: 30s
+      timeout: 15s
+      retries: 5
+  elk-metricbeat-1:
+    image: docker.elastic.co/beats/metricbeat:${ELASTIC_VERSION}
+    hostname: elk-metricbeat-1
+    domainname: coreit
+    environment:
+      - ENV=COREIT
+    volumes:
+      - /proc:/hostfs/proc:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /:/hostfs:ro
+      - /shares/elk/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+    depends_on:
+      - elk-elasticsearch-1
+      - elk-kibana-1
+      - elk-elasticsearch-2
+      - elk-kibana-2
+    networks:
+      - 'elk-stack'
+    command: --strict.perms=false -e
+    healthcheck:
+      test: metricbeat test config -strict.perms=false
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+networks: {elk-stack: {}}
+# use docker volume to persist ES data outside of a container.
+# volumes:
+  # es_data:

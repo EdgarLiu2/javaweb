@@ -1,7 +1,7 @@
 version: '3'
 services:
   tomcat-1:
-    image: javaweb-docker:1.6
+    image: javaweb-docker:${APP_VERSION}
     hostname: tomcat-1
     domainname: internal
     environment:
@@ -25,18 +25,20 @@ services:
     ports:
       - 6379:6379
     restart: unless-stopped
-  cadvisor:
-    image: google/cadvisor
-    hostname: cadvisor
-    domainname: internal
-    ports:
-      - 9080:8080
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    restart: unless-stopped
+    
+    
+  # cadvisor:
+    # image: google/cadvisor
+    # hostname: cadvisor
+    # domainname: internal
+    # ports:
+      # - 9080:8080
+    # volumes:
+      # - /:/rootfs:ro
+      # - /var/run:/var/run:rw
+      # - /sys:/sys:ro
+      # - /var/lib/docker/:/var/lib/docker:ro
+    # restart: unless-stopped
   # sensu-server:
     # image: hiroakis/docker-sensu-server
     # hostname: sensu-server
