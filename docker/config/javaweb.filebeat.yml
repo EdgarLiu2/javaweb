@@ -36,6 +36,5 @@ filebeat.inputs:
 output.logstash:
   # The Logstash hosts
   hosts: [ "elk-logstash-1:5044" ]
-  # hosts: [ "elk-logstash-1:5044", "elk-logstash-2:5044" ]
   loadbalance: true
 

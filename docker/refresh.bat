@@ -41,7 +41,7 @@ IF /I "%RACK_NAME%"=="javaweb" (
 	set ENV=qa
 
 	docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml down
-	REM call mvn package
+	call mvn package
 	docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml up -d
 	REM docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml restart nginx
 )
@@ -52,6 +52,13 @@ IF /I "%RACK_NAME%"=="coreit" (
 IF /I "%RACK_NAME%"=="elk-qa" (
 	docker-compose -p coreit -f docker\docker-compose.elk-qa.yml down
 	docker-compose -p coreit -f docker\docker-compose.elk-qa.yml up -d --remove-orphans
+	
+	REM docker container exec -it coreit_elk-filebeat-2_1 filebeat --strict.perms=false setup -v
+	REM docker container exec -it coreit_elk-metricbeat-1_1 metricbeat --strict.perms=false setup -v
+)
+IF /I "%RACK_NAME%"=="elk" (
+	docker-compose -p coreit -f docker\docker-compose.elk.yml down
+	docker-compose -p coreit -f docker\docker-compose.elk.yml up -d --remove-orphans
 	
 	REM docker container exec -it coreit_elk-filebeat-2_1 filebeat --strict.perms=false setup -v
 	REM docker container exec -it coreit_elk-metricbeat-1_1 metricbeat --strict.perms=false setup -v
@@ -70,9 +77,10 @@ REM elasticsearch:	http://192.168.99.100:9200/_cat/health
 REM docker container exec -it javaweb%ENV%_tomcat-1_1 bash
 REM docker container exec -it javaweb%ENV%_redis-db_1 bash
 REM docker container exec -it coreit_jenkins_1 bash
-REM docker container exec -it elk-elasticsearch-2 bash
-REM docker container exec -it elk-kibana-1 bash
-REM docker container exec -it elk-logstash-1 bash
+REM docker container exec -it coreit_elk-elasticsearch-2 bash
+REM docker container exec -it coreit_elk-kibana-1 bash
+REM docker container exec -it coreit_elk-logstash-1_1 bash
+REM docker container exec -it coreit_elk-logstash-1_1 bin/logstash -t
 REM docker container exec -it coreit_elk-filebeat-1_1 bash
 REM docker container exec -it coreit_elk-metricbeat-1_1 bash
 
@@ -87,10 +95,11 @@ REM docker container logs coreit_elk-logstash-1_1
 REM docker container logs coreit_elk-filebeat-1_1
 
 REM docker image rm -f $(docker image ls -q)
+REM docker-machine ssh default
 
 :NO_RACK_NAME
 echo Usage: 
-echo "    refresh.bat javaweb|coreit|elk"
+echo "    refresh.bat javaweb|coreit|elk-qa|elk"
 
 :EOF
 docker container ls

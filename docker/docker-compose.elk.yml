@@ -18,7 +18,6 @@ services:
         hard: -1
     volumes:
       - /shares/elk/elasticsearch/node1:/usr/share/elasticsearch/data
-      #- /shares/elk/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - 9200:9200
     networks:
@@ -44,8 +43,8 @@ services:
         hard: -1
     volumes:
       - /shares/elk/elasticsearch/node2:/usr/share/elasticsearch/data
-    ports:
-      - 9201:9200
+    # ports:
+      # - 9200:9200
     networks:
       - 'elk-stack'
     links:
@@ -63,8 +62,6 @@ services:
       - ENV=COREIT
       - server.host="0.0.0.0"
       - ELASTICSEARCH_URL="http://elk-elasticsearch-1:9200"
-    # volumes:
-      # - /shares/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     ports:
       - 5601:5601
     networks:
@@ -115,26 +112,6 @@ services:
       interval: 60s
       timeout: 50s
       retries: 5
-  elk-logstash-2:
-    image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
-    hostname: elk-logstash-2
-    domainname: coreit
-    environment:
-      - ENV=COREIT
-      - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-2:9200
-      - config.reload.automatic=true
-    volumes:
-      - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
-    depends_on:
-      - elk-elasticsearch-1
-      - elk-elasticsearch-2
-    networks:
-      - 'elk-stack'
-    healthcheck:
-      test: bin/logstash -t
-      interval: 60s
-      timeout: 50s
-      retries: 5
   elk-filebeat-1:
     image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
     hostname: elk-filebeat-1
@@ -147,7 +124,6 @@ services:
       - /shares/nginx/logs:/data/nginx-logs
     depends_on:
       - elk-logstash-1
-      - elk-logstash-2
     networks:
       - 'elk-stack'
     command: --strict.perms=false -e
@@ -202,7 +178,7 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
-
+      
 networks: {elk-stack: {}}
 # use docker volume to persist ES data outside of a container.
 # volumes:
