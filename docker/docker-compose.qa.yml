@@ -16,6 +16,11 @@ services:
       - tomcat-1
       - tomcat-2
     restart: unless-stopped
+    healthcheck:
+      test: curl -s http://localhost:80 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
   tomcat-1:
     environment:
       - ENV=QA1
@@ -35,6 +40,11 @@ services:
     depends_on:
       - redis-db
     restart: unless-stopped
+    healthcheck:
+      test: curl -s http://localhost:8080 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
   redis-db:
     environment:
       - ENV=QA

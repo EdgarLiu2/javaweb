@@ -13,6 +13,7 @@ set RACK_NAME=%1
 set ELASTIC_VERSION=6.4.0
 SET SHARE=D:\liuzhao\workspace\appdata\shares
 SET SHARE=C:\workspace\shares
+SET DOCKER_HOME=C:\workspace\Kubernetes\docker
 
 mkdir %SHARE%\nginx\logs
 mkdir %SHARE%\ssl
@@ -33,6 +34,8 @@ copy /y docker\config\javaweb.pipeline.conf  %SHARE%\elk\logstash\pipeline
 copy /y docker\config\javaweb.filebeat.yml %SHARE%\elk\filebeat
 copy /y docker\config\filebeat.yml %SHARE%\elk\filebeat
 copy /y docker\config\metricbeat.yml %SHARE%\elk\metricbeat
+copy /y %DOCKER_HOME%\machine\machines\default\*.pem %SHARE%\jenkins\docker_cert_path\default
+copy /y %DOCKER_HOME%\machine\machines\default\id_rsa* %SHARE%\jenkins\docker_cert_path\default
 
 
 IF /I "%RACK_NAME%"=="javaweb" (
@@ -41,7 +44,7 @@ IF /I "%RACK_NAME%"=="javaweb" (
 	set ENV=qa
 
 	docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml down
-	call mvn package
+	REM call mvn package
 	docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml up -d
 	REM docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml restart nginx
 )
@@ -74,8 +77,8 @@ REM kibana:		http://192.168.99.100:5601
 REM elasticsearch:	http://192.168.99.100:9200/_cat/health
 
 
-REM docker container exec -it javaweb%ENV%_tomcat-1_1 bash
-REM docker container exec -it javaweb%ENV%_redis-db_1 bash
+REM docker container exec -it javaweb_%ENV%_tomcat-1_1 bash
+REM docker container exec -it javaweb_%ENV%_redis-db_1 bash
 REM docker container exec -it coreit_jenkins_1 bash
 REM docker container exec -it coreit_elk-elasticsearch-2 bash
 REM docker container exec -it coreit_elk-kibana-1 bash
