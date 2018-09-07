@@ -11,13 +11,13 @@ services:
       - cluster.name=elk-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "discovery.zen.ping.unicast.hosts=elk-elasticsearch-1,elk-elasticsearch-2"
+      - "discovery.zen.ping.unicast.hosts=elk-elasticsearch-1"
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - /shares/elk/elasticsearch/node1:/usr/share/elasticsearch/data
+      - es_data:/usr/share/elasticsearch/data
       #- /shares/elk/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - 9200:9200
@@ -58,7 +58,7 @@ services:
       - xpack.monitoring.elasticsearch.url=http://elk-elasticsearch-1:9200
       - config.reload.automatic=true
     volumes:
-      - /shares/elk/logstash/pipeline:/usr/share/logstash/pipeline
+      - /config/elk/pipeline:/usr/share/logstash/pipeline
     depends_on:
       - elk-elasticsearch-1
     networks:
@@ -75,7 +75,7 @@ services:
     environment:
       - ENV=QA
     volumes:
-      - /shares/elk/filebeat/javaweb.filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /config/elk/javaweb.filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - /shares/tomcat/logs:/data/tomcat-logs
       - /shares/nginx/logs:/data/nginx-logs
     depends_on:
@@ -95,8 +95,8 @@ services:
     environment:
       - ENV=QA
     volumes:
+      - /config/elk/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - /var/log:/mnt/log:ro
-      - /shares/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
     depends_on:
       - elk-elasticsearch-1
       - elk-kibana-1
@@ -115,10 +115,10 @@ services:
     environment:
       - ENV=QA
     volumes:
+      - /config/elk/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
       - /proc:/hostfs/proc:ro
       - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-      - /:/hostfs:ro
-      - /shares/elk/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - /:/hostfs:ro      
     depends_on:
       - elk-elasticsearch-1
       - elk-kibana-1
@@ -132,6 +132,6 @@ services:
       retries: 5
 
 networks: {elk-stack: {}}
-# use docker volume to persist ES data outside of a container.
-# volumes:
-  # es_data:
+
+volumes:
+  es_data:

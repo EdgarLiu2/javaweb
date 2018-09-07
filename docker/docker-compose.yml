@@ -31,7 +31,6 @@ services:
       - 6379:6379
     restart: unless-stopped
     healthcheck:
-      #test: ping="$(redis-cli -h localhost ping)"; if [[ "$ping" == 'PONG' ]]; then echo 0; else echo 1; fi
       test: redis-cli -h localhost ping
       interval: 30s
       timeout: 10s
@@ -75,3 +74,11 @@ services:
     # # SENSU_SERVER_IP RABIT_MQ_USER RABIT_MQ_PASSWORD CLIENT_NAME CLIENT_IP
     # command: sensu-server sensu password sensu-client sensu-client
     
+volumes:
+  redis_data:
+  # nfs:
+    # driver: local
+    # driver_opts:
+      # type: nfs
+      # o: "addr=192.168.0.21,vers=4,rw"
+      # device: ":/opt/data"

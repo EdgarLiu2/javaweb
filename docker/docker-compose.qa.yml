@@ -9,8 +9,8 @@ services:
     ports:
       - 80:80
     volumes:
-      - /shares/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - /shares/ssl:/etc/nginx/certs:ro
+      - /config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /config/ssl:/etc/nginx/certs:ro
       - /shares/nginx/logs:/var/log/nginx
     depends_on:
       - tomcat-1
@@ -23,7 +23,7 @@ services:
       retries: 5
   tomcat-1:
     environment:
-      - ENV=QA1
+      - ENV=QA
   tomcat-2:
     image: javaweb-docker:${APP_VERSION}
     hostname: tomcat-2
@@ -32,7 +32,7 @@ services:
       - REDIS_HOST=redis-db
       - REDIS_PORT=6379
       - APP_LOG_PATH=/data
-      - ENV=QA2
+      - ENV=QA
     ports:
       - 8090:8080
     volumes:
@@ -49,4 +49,4 @@ services:
     environment:
       - ENV=QA
     volumes:
-      - /shares/redis:/data:rw
+      - redis_data:/data

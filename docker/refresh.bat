@@ -11,53 +11,60 @@ IF "%1"=="" GOTO NO_RACK_NAME
 set RACK_NAME=%1
 
 set ELASTIC_VERSION=6.4.0
+set APP_VERSION=1.6
 SET SHARE=D:\liuzhao\workspace\appdata\shares
 SET SHARE=C:\workspace\shares
 SET DOCKER_HOME=C:\workspace\Kubernetes\docker
 
 mkdir %SHARE%\nginx\logs
-mkdir %SHARE%\ssl
 mkdir %SHARE%\tomcat\logs
-mkdir %SHARE%\redis
 mkdir %SHARE%\jenkins\jenkins_home
 mkdir %SHARE%\jenkins\docker_cert_path
-mkdir %SHARE%\registry\data
-mkdir %SHARE%\nexus-data
-mkdir %SHARE%\elk\elasticsearch\node1
-mkdir %SHARE%\elk\elasticsearch\node2
-mkdir %SHARE%\elk\logstash\pipeline
-mkdir %SHARE%\elk\filebeat
-mkdir %SHARE%\elk\metricbeat
-
-copy /y docker\config\nginx.conf %SHARE%\nginx
-copy /y docker\config\javaweb.pipeline.conf  %SHARE%\elk\logstash\pipeline
-copy /y docker\config\javaweb.filebeat.yml %SHARE%\elk\filebeat
-copy /y docker\config\filebeat.yml %SHARE%\elk\filebeat
-copy /y docker\config\metricbeat.yml %SHARE%\elk\metricbeat
 copy /y %DOCKER_HOME%\machine\machines\default\*.pem %SHARE%\jenkins\docker_cert_path\default
 copy /y %DOCKER_HOME%\machine\machines\default\id_rsa* %SHARE%\jenkins\docker_cert_path\default
 
 
-IF /I "%RACK_NAME%"=="javaweb" (
-	set APP_VERSION=1.6
-	set ENV=dev
-	set ENV=qa
-
-	docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml down
+IF /I "%RACK_NAME%"=="web-dev" (	
+	docker-compose -p javaweb_dev -f docker\docker-compose.yml -f docker\docker-compose.dev.yml down
 	REM call mvn package
-	docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml up -d
-	REM docker-compose -p javaweb_%ENV% -f docker\docker-compose.yml -f docker\docker-compose.%ENV%.yml restart nginx
+	docker-compose -p javaweb_dev -f docker\docker-compose.yml -f docker\docker-compose.dev.yml up -d --remove-orphans
+	
+	REM docker container exec -it javawebdev_tomcat-1_1 bash
+)
+IF /I "%RACK_NAME%"=="web-qa1" (
+	docker-compose -p javaweb_qa1 -f docker\docker-compose.yml -f docker\docker-compose.qa.yml down
+	docker-compose -p javaweb_qa1 -f docker\docker-compose.yml -f docker\docker-compose.qa.yml up -d --remove-orphans
+
+	REM docker container exec -it javawebqa1_tomcat-1_1 bash
+	REM docker container exec -it javawebqa1_nginx_1 bash
+	REM docker container logs javawebqa1_redis-db_1
+	REM docker container logs javawebqa1_nginx_1
 )
 IF /I "%RACK_NAME%"=="coreit" (
 	docker-compose -p coreit -f docker\docker-compose.coreit.yml down
 	docker-compose -p coreit -f docker\docker-compose.coreit.yml up -d --remove-orphans
+	
+	REM docker container exec -it coreit_jenkins_1 bash
+	REM docker container logs coreit_nexus_1
 )
 IF /I "%RACK_NAME%"=="elk-qa" (
-	docker-compose -p coreit -f docker\docker-compose.elk-qa.yml down
-	docker-compose -p coreit -f docker\docker-compose.elk-qa.yml up -d --remove-orphans
+	docker-compose -p qa -f docker\docker-compose.elk-qa.yml down
+	docker-compose -p qa -f docker\docker-compose.elk-qa.yml up -d --remove-orphans
 	
-	REM docker container exec -it coreit_elk-filebeat-2_1 filebeat --strict.perms=false setup -v
-	REM docker container exec -it coreit_elk-metricbeat-1_1 metricbeat --strict.perms=false setup -v
+	REM docker container exec -it qa_elk-filebeat-2_1 filebeat --strict.perms=false setup -v
+	REM docker container exec -it qa_elk-metricbeat-1_1 metricbeat --strict.perms=false setup -v
+	
+	REM docker container exec -it qa_elk-elasticsearch-2 bash
+	REM docker container exec -it qa_elk-kibana-1 bash
+	REM docker container exec -it qa_elk-logstash-1_1 bash
+	REM docker container exec -it qa_elk-filebeat-1_1 bash
+	REM docker container exec -it qa_elk-metricbeat-1_1 bash
+
+	REM docker container logs qa_elk-elasticsearch-1_1
+	REM docker container logs qa_elk-elasticsearch-2_1
+	REM docker container logs qa_elk-kibana-1_1
+	REM docker container logs qa_elk-logstash-1_1
+	REM docker container logs qa_elk-filebeat-1_1
 )
 IF /I "%RACK_NAME%"=="elk" (
 	docker-compose -p coreit -f docker\docker-compose.elk.yml down
@@ -65,6 +72,12 @@ IF /I "%RACK_NAME%"=="elk" (
 	
 	REM docker container exec -it coreit_elk-filebeat-2_1 filebeat --strict.perms=false setup -v
 	REM docker container exec -it coreit_elk-metricbeat-1_1 metricbeat --strict.perms=false setup -v
+)
+IF /I "%RACK_NAME%"=="stop" (
+	docker-compose -p javaweb_dev -f docker\docker-compose.yml -f docker\docker-compose.dev.yml down
+	docker-compose -p javaweb_qa1 -f docker\docker-compose.yml -f docker\docker-compose.qa.yml down
+	docker-compose -p coreit -f docker\docker-compose.coreit.yml down
+	docker-compose -p qa -f docker\docker-compose.elk-qa.yml down
 )
 GOTO EOF
 
@@ -77,32 +90,17 @@ REM kibana:		http://192.168.99.100:5601
 REM elasticsearch:	http://192.168.99.100:9200/_cat/health
 
 
-REM docker container exec -it javaweb_%ENV%_tomcat-1_1 bash
-REM docker container exec -it javaweb_%ENV%_redis-db_1 bash
-REM docker container exec -it coreit_jenkins_1 bash
-REM docker container exec -it coreit_elk-elasticsearch-2 bash
-REM docker container exec -it coreit_elk-kibana-1 bash
-REM docker container exec -it coreit_elk-logstash-1_1 bash
-REM docker container exec -it coreit_elk-logstash-1_1 bin/logstash -t
-REM docker container exec -it coreit_elk-filebeat-1_1 bash
-REM docker container exec -it coreit_elk-metricbeat-1_1 bash
 
 
-REM docker container logs javaweb%ENV%_redis-db_1
-REM docker container logs javaweb%ENV%_nginx_1
-REM docker container logs coreit_nexus_1
-REM docker container logs coreit_elk-elasticsearch-1_1
-REM docker container logs coreit_elk-elasticsearch-2_1
-REM docker container logs coreit_elk-kibana-1_1
-REM docker container logs coreit_elk-logstash-1_1
-REM docker container logs coreit_elk-filebeat-1_1
+
 
 REM docker image rm -f $(docker image ls -q)
 REM docker-machine ssh default
 
 :NO_RACK_NAME
 echo Usage: 
-echo "    refresh.bat javaweb|coreit|elk-qa|elk"
+echo "    refresh.bat web-dev|web-qa1|coreit|elk-qa|elk"
 
 :EOF
+docker system prune -f
 docker container ls
