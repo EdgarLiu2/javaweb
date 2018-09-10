@@ -37,16 +37,16 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-  rancher:
-    image: rancher/rancher:v2.0.8
-    hostname: rancher
-    domainname: coreit
-    volumes:
-      - rancher_data:/var/lib/rancher
-    ports:
-      - 80:80
-      - 443:443
-    restart: unless-stopped
+  # rancher:
+    # image: rancher/rancher:v2.0.8
+    # hostname: rancher
+    # domainname: coreit
+    # volumes:
+      # - rancher_data:/var/lib/rancher
+    # ports:
+      # - 80:80
+      # - 443:443
+    # restart: unless-stopped
     
   # registry:
     # image: registry:2.6
@@ -61,4 +61,4 @@ services:
     # restart: unless-stopped
 volumes:
   nexus_data:
-  rancher_data:
+  # rancher_data:
