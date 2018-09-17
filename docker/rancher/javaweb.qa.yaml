@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: qa1
+spec:
+  selector:
+    matchLabels:
+      app: javaweb
+      name: redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: javaweb
+        name: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:4.0.11
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - mountPath: /data
+          # name: tmp-vol
+          name: host-vol
+      volumes:
+      # - name: tmp-vol
+        # emptyDir: {}
+      - name: host-vol
+        hostPath:
+          path: /shares/rancher/data/redis
