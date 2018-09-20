@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deployment
+  namespace: qa1
+spec:
+  selector:
+    matchLabels:
+      app: javaweb
+      name: tomcat
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: javaweb
+        name: tomcat
+    spec:
+      restartPolicy: Always
+      
+      containers:
+      - name: tomcat
+        image: javaweb-docker:1.6
+        ports:
+        - containerPort: 8080
+        env:
+        - name: "REDIS_HOST"
+          value: "redis"
+        - name: "REDIS_PORT"
+          value: "6379"
+        - name: "APP_LOG_PATH"
+          value: "/data"
+        volumeMounts:
+        - mountPath: /data
+          name: host-vol
+ 
+      volumes:
+      - name: host-vol
+        hostPath:
+          path: /shares/rancher/data/tomcat
