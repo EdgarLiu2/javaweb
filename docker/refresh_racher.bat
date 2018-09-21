@@ -19,6 +19,15 @@ IF /I "%ENV%"=="build" (
 	mvn package -f ..\pom.xml
 	docker image ls
 )
+IF /I "%ENV%"=="dev" (
+	kubectl delete -f rancher\javaweb.dev.yaml
+	timeout 10
+	kubectl create -f rancher\javaweb.dev.yaml
+	
+	REM kubectl exec -it tomcat-pod --namespace=dev /bin/bash
+		REM curl http://localhost:8080/javaweb/index.jsp?actor=abc@123.com
+		REM curl http://192.168.99.101:30080/javaweb/index.jsp
+)
 IF /I "%ENV%"=="qa1" (
 	kubectl apply -f rancher\javaweb.redis.qa.yaml -f rancher\javaweb.tomcat.qa.yaml
 	REM kubectl delete -f javaweb.qa.yaml

@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-pod
+  namespace: dev
+  labels:
+    name: redis-pod
+    app: javaweb
+    env: dev
+spec:
+  containers:
+  - name: redis
+    image: redis:4.0.11
+    ports:
+    - containerPort: 6379
+      name: redis
+    volumeMounts:
+    - mountPath: /data
+      name: tmp-vol
+
+  volumes:
+  - name: tmp-vol
+    emptyDir: {}
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tomcat-pod
+  namespace: dev
+  labels:
+    name: tomcat-pod
+    app: javaweb
+    env: dev
+spec:
+  containers:
+  - name: tomcat
+    image: javaweb-docker:1.6
+    ports:
+    - containerPort: 8080
+      name: tomcat
+    env:
+    - name: "REDIS_HOST"
+      value: "redis-pod"
+    - name: "REDIS_PORT"
+      value: "6379"
+    - name: "APP_LOG_PATH"
+      value: "/data"
+    volumeMounts:
+    - mountPath: /data
+      name: tomcat-vol
+
+  volumes:
+  - name: tomcat-vol
+    hostPath:
+      path: /shares/rancher/data/tomcat
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-service
+  namespace: dev
+  labels:
+    name: tomcat-service
+    app: javaweb
+    env: dev
+spec:
+  selector:
+    name: tomcat 
+  type: NodePort
+  ports:
+  - port: 8080
+    name: tomcat
+    nodePort: 30080
+    protocol: TCP      
