@@ -7,7 +7,7 @@
 	<groupId>test</groupId>
 	<artifactId>javaweb</artifactId>
 	<packaging>war</packaging>
-	<version>1.6</version>
+	<version>1.7</version>
 	<name>javaweb Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -100,7 +100,7 @@
 								<imageTag>${project.version}</imageTag>
 								<imageTag>latest</imageTag>
 							</imageTags>
-							<baseImage>tomcat:9.0.11</baseImage>
+							<baseImage>tomcat:9.0.12</baseImage>
 							<maintainer>maintained by maven</maintainer>
 							<resources>
 								<resource>

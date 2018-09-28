@@ -8,19 +8,48 @@ metadata:
     app: javaweb
     env: dev
 spec:
+  hostname: redis-pod
+  subdomain: internal
   containers:
-  - name: redis
+  - name: redis-pod
     image: redis:4.0.11
     ports:
     - containerPort: 6379
       name: redis
+    env:
+    - name: "ENV"
+      value: "DEV"
+    readinessProbe: 
+      tcpSocket: 
+        port: 6379 
+      initialDelaySeconds: 15 
+      periodSeconds: 60
     volumeMounts:
     - mountPath: /data
       name: tmp-vol
-
   volumes:
   - name: tmp-vol
     emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: dev
+  labels:
+    name: redis-service
+    app: javaweb
+    env: dev
+spec:
+  selector:
+    name: redis-pod
+  ports:
+  - port: 6379
+    name: redis
+    targetPort: 6379
+    protocol: TCP    
+
 
 ---
 apiVersion: v1
@@ -33,15 +62,19 @@ metadata:
     app: javaweb
     env: dev
 spec:
+  hostname: tomcat-pod
+  subdomain: internal
   containers:
-  - name: tomcat
-    image: javaweb-docker:1.6
+  - name: tomcat-pod
+    image: javaweb-docker:1.7
     ports:
     - containerPort: 8080
       name: tomcat
     env:
+    - name: "ENV"
+      value: "DEV"
     - name: "REDIS_HOST"
-      value: "redis-pod"
+      value: "redis-service"
     - name: "REDIS_PORT"
       value: "6379"
     - name: "APP_LOG_PATH"
@@ -49,7 +82,6 @@ spec:
     volumeMounts:
     - mountPath: /data
       name: tomcat-vol
-
   volumes:
   - name: tomcat-vol
     hostPath:
@@ -67,10 +99,78 @@ metadata:
     env: dev
 spec:
   selector:
-    name: tomcat 
+    name: tomcat-pod
   type: NodePort
   ports:
   - port: 8080
     name: tomcat
     nodePort: 30080
-    protocol: TCP      
+    targetPort: 8080
+    protocol: TCP    
+
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: dev
+  labels:
+    name: nginx-pod
+    app: javaweb
+    env: dev
+spec:
+  hostname: nginx-pod
+  subdomain: dev
+  containers:
+  - name: nginx-pod
+    image: nginx:1.15.4
+    ports:
+    - containerPort: 80
+      name: nginx
+    env:
+    - name: "ENV"
+      value: "DEV"
+    volumeMounts:
+    - mountPath: /etc/nginx/nginx.conf
+      name: nginx-config
+      subPath: nginx.conf
+      readOnly: true
+    - mountPath: /etc/nginx/certs
+      name: ssl-vol
+      readOnly: true
+    - mountPath: /var/log/nginx
+      name: nginx-vol
+  volumes:
+  - name: nginx-config
+    configMap:
+      name: nginx-dev-config
+  - name: ssl-vol
+    hostPath:
+      path: /config/ssl
+  - name: nginx-vol
+    hostPath:
+      path: /shares/rancher/data/nginx
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: dev
+  labels:
+    name: nginx-service
+    app: javaweb
+    env: dev
+spec:
+  selector:
+    name: nginx-pod
+  type: NodePort
+  ports:
+  - port: 80
+    name: nginx
+    nodePort: 30180
+    targetPort: 80
+    protocol: TCP    
+
+ 

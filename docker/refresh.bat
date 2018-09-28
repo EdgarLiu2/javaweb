@@ -11,7 +11,7 @@ IF "%1"=="" GOTO NO_RACK_NAME
 set RACK_NAME=%1
 
 set ELASTIC_VERSION=6.4.0
-set APP_VERSION=1.6
+set APP_VERSION=1.7
 SET SHARE=D:\liuzhao\workspace\appdata\shares
 SET SHARE=C:\workspace\shares
 SET DOCKER_HOME=C:\workspace\Kubernetes\docker
