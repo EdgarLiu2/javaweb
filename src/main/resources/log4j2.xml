@@ -5,11 +5,6 @@
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{36}] - %msg%n"/>
     </Console>
-    <!-- 
-    <File name="Current" fileName="${env:APP_LOG_PATH}/javaweb_current.log" append="false">
-      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger{36} - %msg%n"/>
-    </File>
-    -->
 	<RollingFile name="Rolling" fileName="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log" filePattern="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log.%d{yyyy-MM-dd}" append="true">
 		<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{36}] - %msg%n"/>
 		<!-- <Log4JStandardLayout /> -->
@@ -19,6 +14,19 @@
 			<SizeBasedTriggeringPolicy size="200 MB" />
 		</Policies>
 	</RollingFile>
+
+    <!-- 
+    <File name="TRUNC-FILE" fileName="${env:APP_LOG_PATH}/javaweb_current.log" append="false">
+      <PatternLayout pattern="%d %-5level [%t] %c{2} [%logger{36}] - %m%n"/>
+    </File>    
+	<RollingFile name="ROLLING-FILE" fileName="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log" filePattern="${env:APP_LOG_PATH}/${env:HOSTNAME}/javaweb.log.%d{yyyy-MM-dd}">
+		<PatternLayout pattern="%d %-5level [%t] %c{2} [%logger{36}] - %m%n"/>
+		<Policies>
+			<TimeBasedTriggeringPolicy interval="1" />
+			<SizeBasedTriggeringPolicy size="200 MB" />
+		</Policies>
+	</RollingFile>
+	-->
   </Appenders>
   <Loggers>
     <Root level="INFO">
